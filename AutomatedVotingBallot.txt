@@ -1,0 +1,595 @@
+package SoftwareEngg;
+import java.io.*;
+class AutomatedVotingBallot
+{
+    BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+    Administrator aobj= new Administrator();
+    Student sobj=new Student();
+    Faculty fobj=new Faculty();
+    public void main() throws IOException
+    {
+        System.out.println("Would you like to start the voting Process? yes/no");
+        String choice=br.readLine();
+        if(choice.equalsIgnoreCase("yes"))
+        {
+            System.out.print('\f');
+            System.out.println("Please note, only the ADMINISTRATOR can update the database");
+            System.out.println();
+            System.out.println();
+            System.out.println("Please enter the ADMINISTRATOR PASSWORD to continue");
+            String password=br.readLine();
+            if(password.equals("AVBadmin"))
+            {
+                System.out.print('\f');
+                System.out.println("Please update all the database before the polling starts");
+                System.out.println('\n'+'\n');
+                aobj.Adminmain();
+                System.out.println('\f');
+                System.out.println("You have successfully updated the database");
+                System.out.println("To begin the polling press 'Y'");
+                boolean x=true;
+                while(x==true)
+                 {
+                     String poll=br.readLine();
+                     if(poll.equalsIgnoreCase("y"))
+                    {
+                        System.out.print('\f');
+                        x=false;
+                        System.out.println("Who shall start the voting, student/faculty ?");
+                        System.out.println();
+                        System.out.println("PS: faculty will commence voting immediately after the students finish voting(in case Students are selected) else vice 			    versa");
+                        String op= br.readLine();
+                        System.out.print('\f');
+                        if(op.equalsIgnoreCase("Student"))
+                        {
+                            sobj.StartPoll();
+                            System.out.print('\f');
+                            fobj.StartPoll();
+                        }
+                        else
+                        {
+                            fobj.StartPoll();
+                            System.out.print('\f');
+                            sobj.StartPoll();
+                        }
+                    }
+                    else
+                    System.out.println("Waiting for you to press 'Y'");
+                }
+                
+                System.out.print('\f');
+                System.out.println("Now the Voting Process has Concluded !");
+                System.out.println("View Voting Results?");
+                String option=br.readLine();
+                System.out.print('\f');
+                if(option.equalsIgnoreCase("yes"))
+                {
+                    aobj.ViewResults();
+                }
+                else
+                {
+                    System.out.println("The Results are stored in the file");
+                System.exit(0);
+            }
+                
+             }
+            
+             else
+             { 
+                 System.out.println("You are not authorized to do the above task");
+                 System.exit(0);
+                }
+            }
+            else
+            {
+            System.out.print('\f');
+            System.out.println("Ok, see you some other time");
+        }
+            
+}
+}
+
+
+package SoftwareEngg;
+import java.io.*;
+public class Administrator
+{
+    public static int Sreg[]=new int[200];
+    public static String Sname[]=new String [200];
+    public static int Spass[]=new int[200];
+    public static int Freg[]=new int[200];
+    public static String Fname[]=new String [200];
+    public static int Fpass[]=new int[200];
+    public static String Cname[]=new String[100];
+    public static String Cpost[]=new String[100];  //contesting post
+    public static int vote[]=new int[100];
+    public static int voteCountStudent[]=new int[100];
+    public static int voteCountFaculty[]=new int[100];
+    public static int student=0;
+    public static int faculty=0;
+    public static int candidate=0;
+    BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+    public  void AddStudents()throws IOException
+    {
+        try
+        {
+            
+            System.out.print('\f');
+            System.out.println("Enter Student Data");
+            int ch=1;
+            int i=0;
+            while(ch==1) //True condition
+            {
+                student++;
+                System.out.println("Enter the name of the Student");
+                Sname[i]=br.readLine();
+                System.out.println("Enter the Registration number of the student");
+                Sreg[i]=Integer.parseInt(br.readLine());
+                System.out.println("Enter the password");
+                Spass[i]=Integer.parseInt(br.readLine());            
+                System.out.println();
+                System.out.println("Number of students registered "+student);
+                System.out.println("More students ? "); //Press 1 for yes
+                ch= Integer.parseInt(br.readLine());
+                System.out.println('\f'); //clear screen
+                i++;
+                
+            }   
+    }
+    catch(Exception e)
+    {
+        System.out.println('\f');
+        System.out.println("Incorrect Data entry");
+    }
+}
+    
+        public  void AddFaculty()throws IOException
+        {
+        System.out.print('\f');
+        System.out.println("Enter Faculty Data");
+        int ch=1;
+        int i=0;
+        while(ch==1) //True condition
+        {
+            
+            faculty++;
+            System.out.println("Enter the name of the Faculty");
+            Fname[i]=br.readLine();
+            System.out.println("Enter the registration number of Faculty");
+            Freg[i]=Integer.parseInt(br.readLine());
+            System.out.println("Enter the password");
+            Fpass[i]=Integer.parseInt(br.readLine()); 
+            System.out.println();
+            System.out.println("Number of faculty registered "+faculty);
+            System.out.println("More Faculty ? "); //Press 1 for yes
+            ch= Integer.parseInt(br.readLine());
+            System.out.println('\f'); //clear screen
+            i++;
+        }   
+    }
+    
+      public  void AddCandidate()throws IOException
+    {
+        
+        System.out.print('\f');
+        System.out.println("Enter Candidate Data");
+        int ch=1;
+        int i=0;
+        while(ch==1) //True condition
+        {
+            candidate++;
+            System.out.println("Enter the name of the Candidate");
+            Cname[i]=br.readLine();
+            System.out.println("Enter the Post that the candidate will be contesting for");
+            Cpost[i]=br.readLine();
+            System.out.println();
+            System.out.println("Number of candidates registered "+candidate);
+            System.out.println("More Candidates ? "); //Press 1 for yes
+            ch= Integer.parseInt(br.readLine());
+            System.out.println('\f'); //clear screen
+            i++;
+            
+        }   
+    }
+    
+    public void ViewStudent() throws IOException
+    {
+        System.out.print('\f');
+        for(int i=0;i<100;i++)
+        {
+            if(Sname[i]!=null )
+            {
+                System.out.println(Sname[i]+ '\t' + Sreg[i] + '\t' + Spass[i]);
+            }
+            else
+            continue;
+        }
+    }
+    
+     public void ViewFaculty() throws IOException
+    {
+        System.out.print('\f');
+        for(int i=0;i<100;i++)
+        {
+            if(Fname[i]!=null )
+            {
+                System.out.println(Fname[i]+ '\t' + Freg[i] + '\t' + Fpass[i]);
+            }
+            else
+            continue;
+        }
+    }
+    
+      public void ViewCandidate() throws IOException
+    {
+        System.out.print('\f');
+        for(int i=0;i<100;i++)
+        {
+            if(Cname[i]!=null )
+            {
+                System.out.println(Cname[i]+ '\t' +Cpost[i]);
+            }
+            else
+            continue;
+        }
+    }
+    
+    public void ViewResults() throws IOException
+    {
+        File f1= new File ("G:\\SE project\\results.txt");
+        FileOutputStream f = new FileOutputStream(f1);
+        System.out.println('\f');
+        System.out.println("Results of the polling are as follows");
+        
+        for(int i=0;i<candidate;i++)
+        {
+            System.out.println();
+            System.out.println();
+           
+                if(Cpost[i]!=null)
+                {
+                    String post=Cpost[i];
+                    System.out.println("For Post of "+post);
+                    for(int j=0;j<candidate;j++)
+                    {
+                        if(Cpost[j].equalsIgnoreCase(post))
+                        {
+                            System.out.println(Cname[j] + '\t' + vote[j]);                           
+                            String d = Cname[j]+'\t'+Cpost[j]+'\t'+vote[j]+'\t'+'\n';
+                            char c[] = d.toCharArray();
+                            for(int x = 0; x < c.length; x++)
+                            f.write(c[x]);
+                            Cname[j]=null;
+                            Cpost[j]=null;
+                            
+                        }
+                }
+            }
+            else
+            continue;
+        }
+    }
+        
+    
+    
+    public void StartPolling() throws IOException
+    {
+        System.out.println("All the databases are now complete");
+        System.out.println("Let the VOTING BEGIN");
+        System.out.println("Best of luck to all the candidates");
+        return;
+    }
+            
+    public void Adminmain() throws IOException
+    {
+        String decision="yes";
+        while(decision.equalsIgnoreCase("yes"))
+        {
+            System.out.println('\f');
+            System.out.println("1.Edit Student Database");
+            System.out.println("2.Edit Faculty Database");
+            System.out.println("3.Edit Candidate Database");
+            System.out.println("4.View Results");
+            System.out.println("5.View Student Database");
+            System.out.println("6.View Faculty Database");
+            System.out.println("7.View Candidate Database");
+            System.out.println();
+            System.out.print("Enter your choice: ");
+            int choice=Integer.parseInt(br.readLine());
+            System.out.println('\f');
+            boolean pw=true;
+            while(pw==true)
+            {
+                System.out.println("Enter admin password");
+                String p= br.readLine();
+                    if(p.equals("AVBadmin")== false)
+                {
+                    System.out.println("Incorrect Password");
+                    System.out.println("Please Re-Enter the password");
+                    
+                }            
+                else
+                pw=false;
+            }
+            
+            if(choice==1)
+            AddStudents();
+            else
+            if(choice==2)
+            AddFaculty();
+            else
+            if(choice==3)
+            AddCandidate();
+            else
+            if(choice==4)
+            ViewResults();
+            else
+            if(choice==5)
+            ViewStudent();
+            else
+            if(choice==6)
+            ViewFaculty();
+            else
+            if(choice==7)
+            ViewCandidate();
+            else
+            System.out.println("Wrong Option Entered");
+            System.out.println();
+            System.out.println("Decision to Continue");
+            decision= br.readLine();
+        }      
+    }
+}
+
+
+package SoftwareEngg;
+import java.io.*;
+class Student extends Administrator
+{
+    BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+    
+    public int LoginStudent()throws IOException
+      {
+        System.out.print("Enter your name : ");
+        String name=br.readLine();
+        System.out.println();
+        System.out.print("Enter your registration number : ");
+        int reg=Integer.parseInt(br.readLine());
+        System.out.println();
+        System.out.print("Enter the password ");
+        int pass=Integer.parseInt(br.readLine());
+        System.out.println();
+        int flag=0;
+       
+        for(int i=0;i<Administrator.student;i++)
+        {
+            if(name.equalsIgnoreCase("EXIT"))
+            return 2;
+            if(name.equalsIgnoreCase(Sname[i]))
+            {
+                flag=1;
+                if(reg==Sreg[i]&& pass==Spass[i])
+               {
+                   if(voteCountStudent[i]==1)
+                   System.out.println("This Student has already completed the Voting process");
+                   
+                   if(voteCountStudent[i]!=1)
+                   {
+                     voteCandidate();
+                     voteCountStudent[i]=1;
+                   }    
+               }
+            }
+            else
+            continue;
+        }
+        if(flag==0)
+        {
+            System.out.println("The Student does not exist in the database");
+            return 1;
+        }
+        return 0;
+      }
+
+    public void voteCandidate() throws IOException
+    {
+        int valid[]=new int[candidate];
+        System.out.print('\f');
+        System.out.println("Student Voting Portal");
+        for(int i =0;i<Administrator.candidate;i++)
+        {
+            int check[]=new int[100];
+            int c=0;
+            System.out.print('\f');
+            if(valid[i]==0)
+            {
+                 System.out.println("Voting for the post of : "+ Cpost[i]);
+                String p1=Cpost[i];
+                for(int j=0;j<Administrator.candidate;j++)
+                {
+                    String p2=Cpost[j];
+                    if(p2.equalsIgnoreCase(p1))
+                    {
+                        valid[j]=1;
+                        System.out.println("Press "+ j + " to vote for candidate " + Cname[j]);
+                        check[c]=j;
+                        c++;       
+                    }
+                    else continue;
+                }
+                boolean d=true;
+                while(d==true)
+                {
+                  
+                    int v=Integer.parseInt(br.readLine());
+                    int flag=0;
+                    for(int z=0;z<c;z++)
+                    {
+                        if(v==check[z])
+                       {
+                           vote[v]++;
+                           flag=1;
+                           
+                           d=false;
+                           break;
+                        }
+                    }
+                    if(flag==0)
+                    System.out.println("Invalid Vote");
+                    System.out.println("Please Vote again");
+                }
+            }
+            else
+            continue;
+        }
+    }
+
+    public void StartPoll() throws IOException
+    {
+        System.out.println("Student Voting Portal");
+        for(int i=0;i<Administrator.student;i++)
+        {
+            int c=LoginStudent();
+            if(c==1)
+            i--; 
+            else
+            if(c==2)
+            return;
+        }
+    }
+    public void Studentmain() throws IOException
+    {
+        Administrator obj=new Administrator();
+        obj.Adminmain();
+        System.out.println('\f');
+        StartPoll();
+    }
+}
+   
+
+package SoftwareEngg;
+import java.io.*;
+class Faculty extends Student
+{
+    Administrator obj=new Administrator();
+    BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+       public int LoginFaculty()throws IOException
+      {
+        System.out.print("Enter your name : ");
+        String name=br.readLine();
+        System.out.println();
+        System.out.print("Enter your SSN (integer) : ");
+        int reg=Integer.parseInt(br.readLine()); 
+        System.out.println();
+        System.out.println();
+        int flag=0;
+        try
+        {
+            
+                
+            for(int i=0;i<Administrator.candidate;i++)
+            {
+                if(name.equalsIgnoreCase("EXIT"))
+                return 2;
+                
+                if(name.equalsIgnoreCase(Fname[i]))
+                {
+                    flag=1;
+                    if(reg==Freg[i])
+                   {
+                       if(voteCountFaculty[i]==1)
+                       System.out.println("This Faculty has already completed the Voting process");
+                       else
+                       if(voteCountFaculty[i]==0)
+                       {
+                         fvoteCandidate();
+                         voteCountFaculty[i]=1;
+                       }    
+                   }
+                }
+                
+                else
+                continue;
+            }
+            if(flag==0)
+            {
+                System.out.println("The Faculty does not exist in the database");
+                return 1;
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println("No more Faculty members are present in the database");
+        }
+        return 0;
+      }
+
+    public void fvoteCandidate() throws IOException
+    {
+        int valid[]=new int[candidate];
+        System.out.print('\f');
+        System.out.println('\t'+"Faculty Voting Portal");
+        for(int i =0;i<Administrator.candidate;i++)
+        {
+            int check[]=new int[100];
+            int c=0;
+            System.out.print('\f');
+            if(valid[i]==0)
+            {
+                 System.out.println("Voting for the post of : "+ Cpost[i]);
+                String p1=Cpost[i];
+                for(int j=0;j<Administrator.candidate;j++)
+                {
+                    String p2=Cpost[j];
+                    if(p2.equalsIgnoreCase(p1))
+                    {
+                        valid[j]=1;
+                        System.out.println("Press "+ j + " to vote for candidate " + Cname[j]);
+                        check[c]=j;
+                        c++;       
+                    }
+                    else continue;
+                }
+                boolean d=true;
+                while(d==true)
+                {
+                  
+                    int v=Integer.parseInt(br.readLine());
+                    int flag=0;
+                    for(int z=0;z<c;z++)
+                    {
+                        if(v==check[z])
+                       {
+                           vote[v]+=2;
+                           flag=1;
+                           
+                           d=false;
+                           break;
+                        }
+                    }
+                    if(flag==0)
+                    System.out.println("Invalid Vote");
+                    System.out.println("Please Vote again");
+                }
+            }
+            else
+            continue;
+        }
+    }
+
+    public void StartPoll() throws IOException
+    {
+        System.out.println("Faculty Voting Portal");
+        for(int i=0;i<Administrator.faculty;i++)
+        {
+            int c=LoginFaculty();
+            if(c==1)
+            i--; 
+            else
+            if(c==2)
+            return;
+        }
+    }
+}
+
+          
